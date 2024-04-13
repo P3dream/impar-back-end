@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using impar_back_end.Services;
 using impar_back_end.Models.Car.Entity;
 using impar_back_end.Models.Car.DTOs;
 using impar_back_end.Models.Car.Dto;
+using impar_back_end.Models.PageOptions;
 
 namespace impar_back_end.Controllers
 {
@@ -19,34 +21,62 @@ namespace impar_back_end.Controllers
             _carService = carService;
         }
 
+        /// <summary>
+        /// Retrieves a paginated list of cars.
+        /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Car>>> GetCars([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [ProducesResponseType(typeof(IEnumerable<Car>), 200)]
+        public async Task<ActionResult<IEnumerable<Car>>> GetCars([FromQuery] PageOptionsDto pageOptionsDto)
         {
-            var cars = await _carService.GetCars(page, pageSize);
-            return Ok(cars);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Car>> GetCar(int id)
-        {
-            var car = await _carService.GetCar(id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-            return Ok(car);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<Car>> PostCar([FromBody] CreateCarDto createCarDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             try
             {
+                var cars = await _carService.GetCars(pageOptionsDto.Page, pageOptionsDto.PageSize);
+                return Ok(cars);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves a car by its ID.
+        /// </summary>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Car), 200)]
+        [ProducesResponseType(404)]
+        public async Task<ActionResult<Car>> GetCar(int id)
+        {
+            try
+            {
+                var car = await _carService.GetCar(id);
+                if (car == null)
+                {
+                    return NotFound();
+                }
+                return Ok(car);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new car.
+        /// </summary>
+        [HttpPost]
+        [ProducesResponseType(typeof(Car), 201)]
+        [ProducesResponseType(400)]
+        public async Task<ActionResult<Car>> PostCar([FromBody] CreateCarDto createCarDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
                 var car = await _carService.CreateCar(createCarDto);
                 return CreatedAtAction(nameof(GetCar), new { id = car.Id }, car);
             }
@@ -56,30 +86,55 @@ namespace impar_back_end.Controllers
             }
         }
 
+        /// <summary>
+        /// Updates an existing car.
+        /// </summary>
         [HttpPut("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> PutCar(int id, [FromBody] UpdateCarDto updateCarDto)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                var result = await _carService.UpdateCar(id, updateCarDto);
+                if (!result)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            var result = await _carService.UpdateCar(id, updateCarDto);
-            if (!result)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest(ex.Message);
             }
-            return NoContent();
         }
 
+        /// <summary>
+        /// Deletes an existing car.
+        /// </summary>
         [HttpDelete("{id}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteCar(int id)
         {
-            var result = await _carService.DeleteCar(id);
-            if (!result)
+            try
             {
-                return NotFound();
+                var result = await _carService.DeleteCar(id);
+                if (!result)
+                {
+                    return NotFound();
+                }
+                return NoContent();
             }
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace impar_back_end.Models.Car.DTOs
     public class CreateCarDto
     {
         [Required(ErrorMessage = "O ID da foto é obrigatório.")]
+        [RegularExpression("^[0-9]+$", ErrorMessage = "The PhotoId must be an integer.")]
         public int PhotoId { get; set; }
 
         [Required(ErrorMessage = "O nome do carro é obrigatório.")]
