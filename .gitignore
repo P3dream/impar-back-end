@@ -1,0 +1,24 @@
+﻿################################################################################
+# Este arquivo .gitignore foi criado automaticamente pelo Microsoft(R) Visual Studio.
+################################################################################
+
+.vs
+/bin/Debug/net6.0
+/obj
+/bin/build/
+*.suo
+*.user
+_ReSharper.*/
+*.sdf
+/bin/
+/obj/
+/Debug/
+/Release/
+*.opensdf
+*.tlog
+*.log
+TestResult.xml
+*.VisualState.xml
+Version.cs
+Version.h
+Version.cpp
