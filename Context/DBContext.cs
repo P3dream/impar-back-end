@@ -4,12 +4,14 @@
     using Microsoft.EntityFrameworkCore;
     using impar_back_end.Models.Car.Entity;
     using impar_back_end.Models.Photo.Entity;
+    using impar_back_end.Models.User.Entity;
 
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public DbSet<Car> Cars { get; set; }
         public DbSet<Photo> Photos { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

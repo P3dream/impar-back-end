@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using impar_back_end.Services;
 using impar_back_end.Models.Photo.Entity;
 using impar_back_end.Models.PageOptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace impar_back_end.Controllers
 {
@@ -22,6 +23,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Retrieves a paginated list of photos.
         /// </summary>
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Photo>), 200)]
         public async Task<ActionResult<IEnumerable<Photo>>> GetPhotos([FromQuery] PageOptionsDto pageOptionsDto)
@@ -33,6 +35,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Retrieves a photo by its ID.
         /// </summary>
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Photo), 200)]
         [ProducesResponseType(404)]
@@ -49,6 +52,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Creates a new photo.
         /// </summary>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(Photo), 201)]
         [ProducesResponseType(400)]
@@ -73,6 +77,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Updates an existing photo.
         /// </summary>
+        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -102,6 +107,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Deletes an existing photo.
         /// </summary>
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]

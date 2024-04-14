@@ -7,6 +7,7 @@ using impar_back_end.Models.Car.Entity;
 using impar_back_end.Models.Car.DTOs;
 using impar_back_end.Models.Car.Dto;
 using impar_back_end.Models.PageOptions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace impar_back_end.Controllers
 {
@@ -24,6 +25,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Retrieves a paginated list of cars.
         /// </summary>
+        [Authorize]
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Car>), 200)]
         public async Task<ActionResult<IEnumerable<Car>>> GetCars([FromQuery] PageOptionsDto pageOptionsDto)
@@ -42,6 +44,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Retrieves a car by its ID.
         /// </summary>
+        [Authorize]
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Car), 200)]
         [ProducesResponseType(404)]
@@ -65,6 +68,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Creates a new car.
         /// </summary>
+        [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(Car), 201)]
         [ProducesResponseType(400)]
@@ -89,6 +93,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Updates an existing car.
         /// </summary>
+        [Authorize]
         [HttpPut("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
@@ -117,6 +122,7 @@ namespace impar_back_end.Controllers
         /// <summary>
         /// Deletes an existing car.
         /// </summary>
+        [Authorize]
         [HttpDelete("{id}")]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
