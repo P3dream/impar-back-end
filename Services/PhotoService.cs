@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using impar_back_end.Context;
 using Microsoft.EntityFrameworkCore;
 using impar_back_end.Models.Photo.Entity;
+using impar_back_end.Models.Photo.Dto;
 
 namespace impar_back_end.Services
 {
@@ -15,6 +16,8 @@ namespace impar_back_end.Services
         {
             _context = context;
         }
+
+
 
         public async Task<IEnumerable<Photo>> GetPhotos(int page, int pageSize)
         {
@@ -29,14 +32,21 @@ namespace impar_back_end.Services
             return await _context.Photos.FindAsync(id);
         }
 
-        public async Task<Photo> CreatePhoto(Photo photo)
+
+
+
+        public async Task<Photo> CreatePhoto(CreatePhotoDto createPhotoDto)
         {
+            var photo = new Photo
+            {
+                Base64 = createPhotoDto.Base64
+            };
             _context.Photos.Add(photo);
             await _context.SaveChangesAsync();
             return photo;
         }
 
-        public async Task<bool> UpdatePhoto(int id, Photo photo)
+        public async Task<bool> UpdatePhoto(int id, UpdatePhotoDto updatePhotoDto)
         {
             var existingPhoto = await _context.Photos.FindAsync(id);
             if (existingPhoto == null)
@@ -44,7 +54,7 @@ namespace impar_back_end.Services
                 return false;
             }
 
-            existingPhoto.Base64 = photo.Base64;
+            existingPhoto.Base64 = updatePhotoDto.Base64;
 
             _context.Photos.Update(existingPhoto);
             await _context.SaveChangesAsync();

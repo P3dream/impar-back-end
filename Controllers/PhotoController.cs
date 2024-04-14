@@ -6,6 +6,8 @@ using impar_back_end.Services;
 using impar_back_end.Models.Photo.Entity;
 using impar_back_end.Models.PageOptions;
 using Microsoft.AspNetCore.Authorization;
+using impar_back_end.Models.Photo.Dto;
+using System.Net;
 
 namespace impar_back_end.Controllers
 {
@@ -33,30 +35,13 @@ namespace impar_back_end.Controllers
         }
 
         /// <summary>
-        /// Retrieves a photo by its ID.
-        /// </summary>
-        [Authorize]
-        [HttpGet("{id}")]
-        [ProducesResponseType(typeof(Photo), 200)]
-        [ProducesResponseType(404)]
-        public async Task<ActionResult<Photo>> GetPhoto(int id)
-        {
-            var photo = await _photoService.GetPhoto(id);
-            if (photo == null)
-            {
-                return NotFound();
-            }
-            return Ok(photo);
-        }
-
-        /// <summary>
         /// Creates a new photo.
         /// </summary>
         [Authorize]
         [HttpPost]
         [ProducesResponseType(typeof(Photo), 201)]
         [ProducesResponseType(400)]
-        public async Task<ActionResult<Photo>> PostPhoto([FromBody] Photo photo)
+        public async Task<ActionResult<Photo>> PostPhoto([FromBody] CreatePhotoDto createPhotoDto)
         {
             try
             {
@@ -65,8 +50,8 @@ namespace impar_back_end.Controllers
                     return BadRequest(ModelState);
                 }
 
-                await _photoService.CreatePhoto(photo);
-                return CreatedAtAction(nameof(GetPhoto), new { id = photo.Id }, photo);
+                await _photoService.CreatePhoto(createPhotoDto);
+                return CreatedAtAction(nameof(GetPhoto), new { id = createPhotoDto.Id }, createPhotoDto);
             }
             catch (Exception ex)
             {
@@ -82,25 +67,46 @@ namespace impar_back_end.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> PutPhoto(int id, [FromBody] Photo photo)
+        public async Task<IActionResult> PutPhoto(int id, [FromBody] UpdatePhotoDto updatePhotoDto)
         {
             try
             {
-                if (id != photo.Id)
+                if (id != updatePhotoDto.Id)
                 {
                     return BadRequest();
                 }
 
-                var result = await _photoService.UpdatePhoto(id, photo);
+                var result = await _photoService.UpdatePhoto(id, updatePhotoDto);
                 if (!result)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
                 return NoContent();
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+         ///<summary>
+         ///Recieves a photo id and returns the photo content in image format
+         ///</summary>
+        [Authorize]
+        [HttpGet("/img/{id}")]
+        public async Task<IActionResult> getImage(int id)
+        {
+            try
+            {
+                Photo photo = await _photoService.GetPhoto(id);
+                if (photo == null)
+                {
+                    return NotFound();
+                }
+                return File(Convert.FromBase64String(photo.Base64), "image/jpeg");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
 
@@ -118,7 +124,7 @@ namespace impar_back_end.Controllers
                 var result = await _photoService.DeletePhoto(id);
                 if (!result)
                 {
-                    return NotFound();
+                    return BadRequest();
                 }
                 return NoContent();
             }
@@ -126,6 +132,22 @@ namespace impar_back_end.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        /// <summary>
+        /// Retrieves a photo by its ID.
+        /// </summary>
+        [Authorize]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(Photo), 200)]
+        [ProducesResponseType(204)]
+        public async Task<ActionResult<Photo>> GetPhoto(int id)
+        {
+            var photo = await _photoService.GetPhoto(id);
+            if (photo == null)
+            {
+                return NoContent();
+            }
+            return Ok(photo);
         }
     }
 }

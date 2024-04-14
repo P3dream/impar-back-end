@@ -19,6 +19,7 @@ builder.Services.AddScoped<PhotoService>();
 builder.Services.AddScoped<CarService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<JwtService>();
+builder.Services.AddScoped<CardService>();
 
 
 builder.Services.AddAuthentication(options =>
