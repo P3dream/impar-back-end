@@ -68,15 +68,12 @@ namespace impar_back_end.Services
             Photo photo = await _photoService.GetPhoto(updateCarDto.PhotoId);
             if (photo == null)
             {
-                Console.WriteLine("Photo id" + updateCarDto.PhotoId);
-                Console.WriteLine("2");
                 return false;
             }
 
             var existingCar = await _context.Cars.FindAsync(id);
             if (existingCar == null)
             {
-                Console.WriteLine("3");
                 return false;
             }
 

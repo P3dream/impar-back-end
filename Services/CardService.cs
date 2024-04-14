@@ -126,19 +126,15 @@ namespace impar_back_end.Services
                 };
 
                 bool carUpdateResult = await _carService.UpdateCar(updateCardDto.CarId, updateCarDto);
-                Console.WriteLine("aqui 3");
 
                 if (!carUpdateResult)
                 {
-                    Console.WriteLine("aqui 4");
                     return false;
                 }
-                Console.WriteLine("aqui 5");
                 return true;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao atualizar card: {ex.Message}");
                 return false;
             }
         }
