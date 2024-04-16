@@ -6,14 +6,16 @@
     using global::impar_back_end.Models.Card;
     using global::impar_back_end.Services;
     using global::impar_back_end.Models.PageOptions;
+    using Microsoft.AspNetCore.Authorization;
 
     namespace impar_back_end.Controllers
     {
-        [Route("api/[controller]")]
+        [Route("api/Card")]
         [ApiController]
         public class CardController : ControllerBase
         {
             private readonly CardService _cardService;
+ 
 
             public CardController(CardService cardService)
             {
@@ -21,7 +23,7 @@
             }
 
 
-
+            [Authorize]
             [HttpPost]
             public async Task<IActionResult> CreateCard([FromForm]CreateCardDto createCardDto)
             {
@@ -39,12 +41,13 @@
                 }
             }
 
-            [HttpDelete("delete")]
-            public async Task<IActionResult> DeleteCard(int carId, int photoId)
+            [Authorize]
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> DeleteCard(int id)
             {
                 try
                 {
-                    var result = await _cardService.DeleteCard(carId, photoId);
+                    var result = await _cardService.DeleteCard(id);
                     if (result)
                     {
                         return Ok("Card deleted successfully.");
@@ -59,14 +62,14 @@
                     return StatusCode(500, $"An error occurred: {ex.Message}");
                 }
             }
-    
 
+            [Authorize]
             [HttpGet]
-            public async Task<IActionResult> GetCards([FromQuery] PageOptionsDto pageOptionsDto)
+            public async Task<IActionResult> GetCards([FromQuery] PageOptionsDto pageOptionsDto,[FromQuery]String? searchString)
             {
                 try
                 {
-                    var cards = await _cardService.GetCards(pageOptionsDto);
+                    var cards = await _cardService.GetCards(pageOptionsDto,searchString);
                     return Ok(cards);
                 }
                 catch (Exception ex)
@@ -74,12 +77,13 @@
                     return StatusCode(500, $"Internal server error: {ex.Message}");
                 }
             }
-            [HttpPut]
-            public async Task<IActionResult> UpdateCard([FromForm] UpdateCardDto updateCardDto)
+            [Authorize]
+            [HttpPut("{CarId}")]
+            public async Task<IActionResult> UpdateCard(int CarId, [FromForm] UpdateCardDto updateCardDto)
             {
                 try
-                {
-                    var result = await _cardService.UpdateCard(updateCardDto);
+                {                    
+                    var result = await _cardService.UpdateCard(updateCardDto, CarId);
                     if (result)
                     {
                         return Ok("Card updated successfully.");

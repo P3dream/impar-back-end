@@ -26,7 +26,7 @@ namespace impar_back_end.Controllers
             try
             {
                 await _userService.Register(user);
-                return CreatedAtAction(nameof(Login), new { username = user.Username }, user);
+                return CreatedAtAction(nameof(Login), new { username = user.Username });
             }
             catch (ArgumentException ex)
             {

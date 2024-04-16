@@ -36,11 +36,15 @@ namespace impar_back_end.Services
             }
         }
 
-        public async Task<bool> DeleteCard(int carId, int photoId)
+        public async Task<bool> DeleteCard(int carId)
         {
             try
             {
-                var photoDeleted = await _photoService.DeletePhoto(photoId);
+                var foundCar = await _carService.GetCar(carId);
+                if(foundCar == null) {
+                    return false;
+                }
+                var photoDeleted = await _photoService.DeletePhoto(foundCar.PhotoId);
                 if (!photoDeleted)
                 {
                     return false;
@@ -55,7 +59,6 @@ namespace impar_back_end.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting card: {ex.Message}");
                 return false;
             }
         }
@@ -72,14 +75,13 @@ namespace impar_back_end.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao criar carro a partir de foto: {ex.Message}");
                 return false;
             }
         }
 
 
 
-        public async Task<IEnumerable<object>> GetCards(PageOptionsDto pageOptions)
+        public async Task<IEnumerable<object>> GetCards(PageOptionsDto pageOptions, string? searchString)
         {
             var query = _context.Cars
                 .Join(_context.Photos,
@@ -91,6 +93,14 @@ namespace impar_back_end.Services
                         Photo = photo
                     })
                 .AsQueryable();
+
+            //if (!string.IsNullOrEmpty(searchString))
+            //{
+            //    query = query.Where(item =>
+            //        item.Car.Name.Trim().Contains(searchString) || 
+            //        item.Car.Status.    Contains(searchString)
+            //    );
+            //}
 
             if (pageOptions != null)
             {
@@ -104,28 +114,33 @@ namespace impar_back_end.Services
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateCard(UpdateCardDto updateCardDto)
+        public async Task<bool> UpdateCard(UpdateCardDto updateCardDto,int CarId)
         {
             try
             {
+                var foundCar = await _carService.GetCar(CarId);
+                if (foundCar == null)
+                {
+                    return false;
+                }
                 string base64Image = await ConvertImageToBase64(updateCardDto.Image);
-                var photo = await _photoService.UpdatePhoto(updateCardDto.PhotoId, new UpdatePhotoDto { Base64 = base64Image });
+                var photo = await _photoService.UpdatePhoto(foundCar.PhotoId, new UpdatePhotoDto { Base64 = base64Image });
 
                 if (photo == null)
                 {
                     return false;
                 }
 
-                // Corrigindo o ID do carro
+                
                 var updateCarDto = new UpdateCarDto
                 {
-                    Id = updateCardDto.CarId, // Usando o ID correto do carro
+                    Id = CarId,
                     Name = updateCardDto.CarName,
                     Status = updateCardDto.Status,
-                    PhotoId = updateCardDto.PhotoId // Garantindo que o PhotoId seja passado corretamente
+                    PhotoId = foundCar.PhotoId 
                 };
 
-                bool carUpdateResult = await _carService.UpdateCar(updateCardDto.CarId, updateCarDto);
+                bool carUpdateResult = await _carService.UpdateCar(CarId, updateCarDto);
 
                 if (!carUpdateResult)
                 {

@@ -38,7 +38,7 @@ namespace impar_back_end.Services
         {
             if (await _context.Users.AnyAsync(u => u.Username == user.Username))
             {
-                throw new ArgumentException("Username already exists");
+                throw new ArgumentException("Username is already beeing used");
             }
 
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);

@@ -92,7 +92,7 @@ namespace impar_back_end.Controllers
          ///Recieves a photo id and returns the photo content in image format
          ///</summary>
         [Authorize]
-        [HttpGet("/img/{id}")]
+        [HttpGet("/getImage/{id}")]
         public async Task<IActionResult> getImage(int id)
         {
             try
