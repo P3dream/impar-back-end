@@ -94,13 +94,13 @@ namespace impar_back_end.Services
                     })
                 .AsQueryable();
 
-            //if (!string.IsNullOrEmpty(searchString))
-            //{
-            //    query = query.Where(item =>
-            //        item.Car.Name.Trim().Contains(searchString) || 
-            //        item.Car.Status.    Contains(searchString)
-            //    );
-            //}
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(item =>
+                    item.Car.Name.Trim().Contains(searchString) ||
+                    item.Car.Status.Contains(searchString)
+                );
+            }
 
             if (pageOptions != null)
             {
