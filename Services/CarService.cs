@@ -62,19 +62,19 @@ namespace impar_back_end.Services
         {
             if (id != updateCarDto.Id)
             {
-                return false;
+                throw new ArgumentException("Id provided is diferent from provided on url");
             }
 
             Photo photo = await _photoService.GetPhoto(updateCarDto.PhotoId);
             if (photo == null)
             {
-                return false;
+                throw new InvalidOperationException("It was not possible get this photo");
             }
 
             var existingCar = await _context.Cars.FindAsync(id);
             if (existingCar == null)
             {
-                return false;
+                throw new BadHttpRequestException("Invalid car id provided.");
             }
 
             existingCar.Name = updateCarDto.Name;
@@ -91,7 +91,7 @@ namespace impar_back_end.Services
             var car = await _context.Cars.FindAsync(id);
             if (car == null)
             {
-                return false;
+                throw new BadHttpRequestException("Invalid car id provided.");
             }
 
             _context.Cars.Remove(car);
