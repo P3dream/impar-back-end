@@ -42,17 +42,17 @@ namespace impar_back_end.Services
             {
                 var foundCar = await _carService.GetCar(carId);
                 if(foundCar == null) {
-                    throw new ArgumentException("Provided car id is not valid.");
+                    return false;
                 }
                 var photoDeleted = await _photoService.DeletePhoto(foundCar.PhotoId);
                 if (!photoDeleted)
                 {
-                    throw new InvalidOperationException("It was not possible to delete the photo");
+                    return false;
                 }
                 var carDeleted = await _carService.DeleteCar(carId);
                 if (!carDeleted)
                 {
-                    throw new InvalidOperationException("It was not possible to delete this car");
+                    return false;
                 }
 
                 return true;
@@ -94,13 +94,13 @@ namespace impar_back_end.Services
                     })
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(item =>
-                    item.Car.Name.Trim().Contains(searchString) ||
-                    item.Car.Status.Contains(searchString)
-                );
-            }
+            //if (!string.IsNullOrEmpty(searchString))
+            //{
+            //    query = query.Where(item =>
+            //        item.Car.Name.Trim().Contains(searchString) || 
+            //        item.Car.Status.    Contains(searchString)
+            //    );
+            //}
 
             if (pageOptions != null)
             {
@@ -121,14 +121,14 @@ namespace impar_back_end.Services
                 var foundCar = await _carService.GetCar(CarId);
                 if (foundCar == null)
                 {
-                    throw new ArgumentException("Provided car id is not valid.");
+                    return false;
                 }
                 string base64Image = await ConvertImageToBase64(updateCardDto.Image);
                 var photo = await _photoService.UpdatePhoto(foundCar.PhotoId, new UpdatePhotoDto { Base64 = base64Image });
 
                 if (photo == null)
                 {
-                    throw new InvalidOperationException("It was not possible to update the photo");
+                    return false;
                 }
 
                 
@@ -144,7 +144,7 @@ namespace impar_back_end.Services
 
                 if (!carUpdateResult)
                 {
-                    throw new InvalidOperationException("It was not possible to update this car");
+                    return false;
                 }
                 return true;
             }

@@ -51,7 +51,7 @@ namespace impar_back_end.Services
             var existingPhoto = await _context.Photos.FindAsync(id);
             if (existingPhoto == null)
             {
-                throw new BadHttpRequestException("Invalid Photo id provided.");
+                return false;
             }
 
             existingPhoto.Base64 = updatePhotoDto.Base64;
@@ -66,7 +66,7 @@ namespace impar_back_end.Services
             var photo = await _context.Photos.FindAsync(id);
             if (photo == null)
             {
-                throw new BadHttpRequestException("Invalid Photo id provided.");
+                return false;
             }
 
             _context.Photos.Remove(photo);
